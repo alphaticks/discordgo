@@ -83,6 +83,11 @@ type GuildUpdate struct {
 	*Guild
 }
 
+// GuildInviteCreate is the data for a GuildInviteCreate event
+type GuildInviteCreate struct {
+	*Invite
+}
+
 // GuildDelete is the data for a GuildDelete event.
 type GuildDelete struct {
 	*Guild

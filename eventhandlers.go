@@ -28,6 +28,8 @@ const (
 	guildRoleDeleteEventType          = "GUILD_ROLE_DELETE"
 	guildRoleUpdateEventType          = "GUILD_ROLE_UPDATE"
 	guildUpdateEventType              = "GUILD_UPDATE"
+	guildInviteCreateEventType        = "INVITE_CREATE"
+	guildInviteDeleteEventType        = "INVITE_DELETE"
 	interactionCreateEventType        = "INTERACTION_CREATE"
 	messageAckEventType               = "MESSAGE_ACK"
 	messageCreateEventType            = "MESSAGE_CREATE"
@@ -455,6 +457,26 @@ func (eh guildUpdateEventHandler) New() interface{} {
 // Handle is the handler for GuildUpdate events.
 func (eh guildUpdateEventHandler) Handle(s *Session, i interface{}) {
 	if t, ok := i.(*GuildUpdate); ok {
+		eh(s, t)
+	}
+}
+
+// guildInviteCreateEventHandler is an event handler for GuildUpdate events.
+type guildInviteCreateEventHandler func(*Session, *GuildInviteCreate)
+
+// Type returns the event type for GuildUpdate events.
+func (eh guildInviteCreateEventHandler) Type() string {
+	return guildInviteCreateEventType
+}
+
+// New returns a new instance of GuildUpdate.
+func (eh guildInviteCreateEventHandler) New() interface{} {
+	return &GuildInviteCreate{}
+}
+
+// Handle is the handler for GuildUpdate events.
+func (eh guildInviteCreateEventHandler) Handle(s *Session, i interface{}) {
+	if t, ok := i.(*GuildInviteCreate); ok {
 		eh(s, t)
 	}
 }
@@ -980,6 +1002,8 @@ func handlerForInterface(handler interface{}) EventHandler {
 		return guildRoleUpdateEventHandler(v)
 	case func(*Session, *GuildUpdate):
 		return guildUpdateEventHandler(v)
+	case func(*Session, *GuildInviteCreate):
+		return guildInviteCreateEventHandler(v)
 	case func(*Session, *InteractionCreate):
 		return interactionCreateEventHandler(v)
 	case func(*Session, *MessageAck):
@@ -1052,6 +1076,7 @@ func init() {
 	registerInterfaceProvider(guildRoleDeleteEventHandler(nil))
 	registerInterfaceProvider(guildRoleUpdateEventHandler(nil))
 	registerInterfaceProvider(guildUpdateEventHandler(nil))
+	registerInterfaceProvider(guildInviteCreateEventHandler(nil))
 	registerInterfaceProvider(interactionCreateEventHandler(nil))
 	registerInterfaceProvider(messageAckEventHandler(nil))
 	registerInterfaceProvider(messageCreateEventHandler(nil))
